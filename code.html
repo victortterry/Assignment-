@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .event-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Event Management Platform</h1>
+    </header>
+
+    <main>
+        <!-- Event Creation Form -->
+        <div id="eventForm" style="display: none;">
+            <h2>Create an Event</h2>
+            <form id="createEventForm">
+                <label for="eventName">Event Name:</label>
+                <input type="text" id="eventName" required>
+
+                <label for="eventDate">Event Date:</label>
+                <input type="date" id="eventDate" required>
+
+                <label for="eventLocation">Event Location:</label>
+                <input type="text" id="eventLocation" required>
+
+                <button type="button" onclick="createEvent()">Create Event</button>
+            </form>
+        </div>
+
+        <!-- Event Cards -->
+        <div id="eventCards"></div>
+
+        <!-- Button to Toggle Event Creation Form -->
+        <button class="btn" onclick="toggleEventForm()">Create New Event</button>
+    </main>
+
+    <script>
+        // Sample data for demonstration purposes
+        const events = [
+            { name: 'Event 1', date: '2023-11-15', location: 'Venue 1' },
+            { name: 'Event 2', date: '2023-12-01', location: 'Venue 2' },
+        ];
+
+        // Function to display events
+        function displayEvents() {
+            const eventCardsContainer = document.getElementById('eventCards');
+            eventCardsContainer.innerHTML = '';
+
+            events.forEach(event => {
+                const eventCard = document.createElement('div');
+                eventCard.classList.add('event-card');
+                eventCard.innerHTML = `
+                    <h3>${event.name}</h3>
+                    <p>Date: ${event.date}</p>
+                    <p>Location: ${event.location}</p>
+                    <button class="btn" onclick="registerForEvent('${event.name}')">Register</button>
+                `;
+                eventCardsContainer.appendChild(eventCard);
+            });
+        }
+
+        // Function to toggle event creation form visibility
+        function toggleEventForm() {
+            const eventForm = document.getElementById('eventForm');
+            eventForm.style.display = eventForm.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Function to create a new event
+        function createEvent() {
+            const eventName = document.getElementById('eventName').value;
+            const eventDate = document.getElementById('eventDate').value;
+            const eventLocation = document.getElementById('eventLocation').value;
+
+            // Add the new event to the events array (for demonstration purposes)
+            events.push({ name: eventName, date: eventDate, location: eventLocation });
+
+            // Display the updated list of events
+            displayEvents();
+
+            // Clear the form
+            document.getElementById('createEventForm').reset();
+
+            // Hide the event creation form
+            toggleEventForm();
+        }
+
+        // Function to simulate attendee registration
+        function registerForEvent(eventName) {
+            alert(`Registered for ${eventName}`);
+        }
+
+        // Initial display of events
+        displayEvents();
+    </script>
+
+</body>
+</html>
