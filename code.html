@@ -1,0 +1,87 @@
+django-admin startproject event_management_project
+cd event_management_project
+python manage.py startapp events
+
+
+
+
+
+from django.db import models
+
+class Event(models.Model):
+    name = models.CharField(max_length=255)
+    date = models.DateField()
+    location = models.CharField(max_length=255)
+
+class Attendee(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    ticket_type = models.CharField(max_length=50)
+    rsvp_status = models.BooleanField(default=False)
+
+
+
+
+
+
+
+from django.shortcuts import render, redirect
+from .models import Event, Attendee
+from .forms import EventForm, RegistrationForm
+
+def event_list(request):
+    events = Event.objects.all()
+    return render(request, 'events/event_list.html', {'events': events})
+
+def create_event(request):
+    if request.method == 'POST':
+        form = EventForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('event_list')
+    else:
+        form = EventForm()
+    return render(request, 'events/create_event.html', {'form': form})
+
+def register_for_event(request, event_id):
+    event = Event.objects.get(pk=event_id)
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            attendee = form.save(commit=False)
+            attendee.event = event
+            attendee.save()
+            return redirect('event_list')
+    else:
+        form = RegistrationForm()
+    return render(request, 'events/register_for_event.html', {'form': form, 'event': event})
+
+
+
+
+from django import forms
+from .models import Event, Attendee
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['name', 'date', 'location']
+
+class RegistrationForm(forms.ModelForm):
+    class Meta:
+        model = Attendee
+        fields = ['name', 'email', 'ticket_type']
+
+
+
+
+
+from django.urls import path
+from .views import event_list, create_event, register_for_event
+
+urlpatterns = [
+    path('', event_list, name='event_list'),
+    path('create/', create_event, name='create_event'),
+    path('<int:event_id>/register/', register_for_event, name='register_for_event'),
+]
